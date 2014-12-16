@@ -34,7 +34,9 @@ var Megatask = function() {
       self.tasks.push(newTask);
       var newItem = createListItem(newTask);
       $('#tasks').append(newItem);
-      saveTasks();
+      if (taskToAppend.id > self.counter){
+        self.counter = taskToAppend.id;
+      }
     };
     var createListItem = function(task) {
       var deleteButton, editButton, buttonGroup, label;
@@ -93,6 +95,23 @@ var Megatask = function() {
       editForm.find('input.task_name').val(task.name);
       editForm.removeClass('hidden');
       listItem.html(editForm);
+    });
+
+    $(document).on('submit', '.edit_task', function(e){
+      e.preventDefault();
+      $(this).find('.task_name').val();
+      var listItem = getListItemFromButton(this);
+      var id = getTaskIdFromListItem(listItem);
+      var task;
+      for (var i=0; i < self.tasks.length; i++){
+        if (self.tasks[i].id.toString() === id){
+          task = self.tasks[i];
+        }
+      }
+      task.name = $(this).find('.task_name').val();
+      saveTasks();
+      listItem.replaceWith(createListItem(task));
+
     });
 
     loadTasks();
